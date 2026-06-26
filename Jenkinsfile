@@ -47,7 +47,7 @@ node{
     } 
 }
 def sendEmail(String subject, String body, String recipient) {
-    emailext (
+    emailext(
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
         body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
         to: 'shahabsk135@gmail.com'
