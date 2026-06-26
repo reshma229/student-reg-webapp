@@ -40,7 +40,7 @@ node{
         
     } finally {
         def buildStatus = currentBuild.result ?: 'SUCCESS'
-        sendEmail(
+        emailext(
         subject: "${env.JOB_NAME} -${env.BUILD_NUMBER} - ${buildStatus}", 
         body: """Hi team
         please check the logs at ${env.BUILD_URL}""", 'shahabsk135@gmail.com')
