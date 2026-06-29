@@ -60,14 +60,14 @@ stage("starting tomcat process") {
 post {
         SUCCESS {
             
-                def buildStatus = currentBuild.result ?: 'SUCCESS'
+                
                 sendEmail(
                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
                     body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
                     to: 'shahabsk135@gmail.com')
 }
 FAILURE {
-                def buildStatus = currentBuild.result ?: 'FAILURE'
+                
                 sendEmail(
                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
                     body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
