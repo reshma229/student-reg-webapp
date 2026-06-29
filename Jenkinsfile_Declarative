@@ -74,6 +74,7 @@ FAILURE {
                     to: 'shahabsk135@gmail.com')
 }
 }
+}
 def sendEmail(String subject, String body, String recipient) {
     emailext(
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
