@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+    triggers {
+        githubPush()
+    }
+    environment {
+  SONARQUBE_URL = "http://18.207.226.102:9000"
+  SONARQUBE_TOKEN = credentials('Sonartoken')
+  TOMCAT_SERVER_IP = "3.238.233.166"
+}
+
+    tools {
+  maven 'maven-3.9.0'
+}
+    stages {
+        stage('git clone') {
+            steps {
+               git branch: 'development', credentialsId: 'gihub-cred', url: 'https://github.com/reshma229/student-reg-webapp.git' 
+            }
+        }
+        stage('maven verify') {
+  steps { 
+  sh "mvn sonar:sonar -Dsonar.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}"
+  }
+}
+stage("upload war to nexus") {
+    steps {
+        sh "mvn clean deploy"
+    }
+}
+stage("stop  tomcat process") {
+    steps {
+        sshagent(['tomcat_server']) {
+            sh """
+             echo stopping tomcat process
+            ssh -o StrictHostKeyChecking=no  ec2-user@${TOMCAT_SERVER_IP} sudo systemctl stop tomcat
+            sleep 10
+            """
+}
+
+    }
+}
+stage("copy war to tomcat") {
+    steps {
+        sshagent(['tomcat_server']) {
+            sh "scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${TOMCAT_SERVER_IP}:/opt/tomcat/webapps/"
+}
+
+    }
+}
+stage("starting tomcat process") {
+    steps {
+        sshagent(['tomcat_server']) {
+            sh "ssh -o StrictHostKeyChecking=no  ec2-user@${TOMCAT_SERVER_IP} sudo systemctl start tomcat"
+}
+
+    }
+}
+    }
+post {
+        SUCCESS {
+            
+                def buildStatus = currentBuild.result ?: 'SUCCESS'
+                sendEmail(
+                    subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
+                    body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
+                    to: 'shahabsk135@gmail.com')
+}
+FAILURE {
+                def buildStatus = currentBuild.result ?: 'FAILURE'
+                sendEmail(
+                    subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
+                    body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
+                    to: 'shahabsk135@gmail.com')
+}
+}
+def sendEmail(String subject, String body, String recipient) {
+    emailext(
+        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
+        body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
+        to: 'shahabsk135@gmail.com'
