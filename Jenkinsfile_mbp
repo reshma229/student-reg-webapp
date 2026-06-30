@@ -31,13 +31,11 @@ stage("upload war to nexus") {
         sh "mvn clean deploy"
     }
 }
-stage("deploy to dev server ") {
+stage("deploy to dev server") {
     when {
         branch 'development'
     }
-    when {
-        branch 'development'
-    }
+    
     steps {
         sshagent(['tomcat_server']) {
             sh """
