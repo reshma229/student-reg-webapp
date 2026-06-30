@@ -49,7 +49,7 @@ stage("deploy to dev server") {
 }
         
 }
-stage("deploy to dev server") {
+stage("deploy to feature server") {
     when {
         branch 'feature-login'
     }
