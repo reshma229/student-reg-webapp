@@ -21,6 +21,8 @@ pipeline {
         
         stage('maven verify') {
   steps { 
+    
+    sh "mvn clean pacakage"
   sh "mvn sonar:sonar -Dsonar.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}"
   }
 }
