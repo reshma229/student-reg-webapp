@@ -4,9 +4,9 @@ pipeline {
         githubPush()
     }
     environment {
-  SONARQUBE_URL = "http://18.207.226.102:9000"
+  SONARQUBE_URL = "http://34.201.129.96:9000"
   SONARQUBE_TOKEN = credentials('Sonartoken')
-  TOMCAT_SERVER_IP = "3.238.233.166"
+  TOMCAT_SERVER_IP = "172.31.72.241"
 }
 
     tools {
