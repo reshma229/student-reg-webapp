@@ -1,0 +1,98 @@
+pipeline {
+    agent any
+    triggers {
+        githubPush()
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+        disableConcurrentBuilds()
+        timeout(time: 5, unit: 'MINUTES')
+    }
+    environment {
+  SONARQUBE_URL = "http://34.201.129.96:9000"
+  SONARQUBE_TOKEN = credentials('Sonartoken')
+  TOMCAT_SERVER_IP = "172.31.72.241"
+}
+
+    tools {
+  maven 'maven-3.9.0'
+}
+    stages {
+        
+        stage('maven verify') {
+  steps { 
+    
+    sh "mvn clean package"
+  sh "mvn sonar:sonar -Dsonar.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}"
+  }
+}
+stage("upload war to nexus") {
+    steps {
+        sh "mvn clean deploy"
+    }
+}
+stage("deploy to dev server ") {
+    when {
+        branch 'development'
+    }
+    when {
+        branch 'development'
+    }
+    steps {
+        sshagent(['tomcat_server']) {
+            sh """
+             echo stopping tomcat process
+            ssh -o StrictHostKeyChecking=no  ec2-user@${TOMCAT_SERVER_IP} sudo systemctl stop tomcat
+            sleep 10
+            scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${TOMCAT_SERVER_IP}:/opt/tomcat/webapps/
+            ssh -o StrictHostKeyChecking=no  ec2-user@${TOMCAT_SERVER_IP} sudo systemctl start tomcat
+            """
+ }
+}
+        
+}
+stage("deploy to qa server ") {
+    when {
+        branch 'master'
+    }
+    
+    steps {
+        echo "Deploying to QA server"
+        
+}
+        
+}
+
+    }
+
+
+    
+post {
+    always {
+        cleanWs()
+    }
+        success {
+            
+                
+                sendEmail(
+                    "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Build SUCCESS",
+                     "Build SUCCESS. please check the console output at ${env.BUILD_URL}", 
+                     'shahabsk135@gmail.com')
+}
+failure {
+                
+                sendEmail(
+                    "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Build FAILURE",
+                    "Build FAILURE. please check the console output at ${env.BUILD_URL}",
+                    'shahabsk135@gmail.com')
+}
+}
+}
+def sendEmail(String subject, String body, String recipient) {
+    emailext(
+        subject: subject,
+        body: body,
+        to: recipient,
+        mimeType: 'text/html'
+    )
+}
