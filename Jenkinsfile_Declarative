@@ -59,6 +59,9 @@ stage("starting tomcat process") {
 }
     }
 post {
+    always {
+        cleanWs()
+    }
         success {
             
                 
