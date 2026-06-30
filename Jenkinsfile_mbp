@@ -49,6 +49,15 @@ stage("deploy to dev server") {
 }
         
 }
+stage("deploy to dev server") {
+    when {
+        branch 'feature-login'
+    }
+    
+    steps {
+        echo "Deploying to feature-login server"
+    }
+}
 stage("deploy to qa server ") {
     when {
         branch 'master'
