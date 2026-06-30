@@ -18,11 +18,7 @@ pipeline {
   maven 'maven-3.9.0'
 }
     stages {
-        stage('git clone') {
-            steps {
-               git branch: 'development', credentialsId: 'gihub-cred', url: 'https://github.com/reshma229/student-reg-webapp.git' 
-            }
-        }
+        
         stage('maven verify') {
   steps { 
   sh "mvn sonar:sonar -Dsonar.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}"
