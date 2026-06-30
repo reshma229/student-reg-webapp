@@ -3,6 +3,11 @@ pipeline {
     triggers {
         githubPush()
     }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+        disableConcurrentBuilds()
+        timeout(time: 5, unit: 'MINUTES')
+    }
     environment {
   SONARQUBE_URL = "http://34.201.129.96:9000"
   SONARQUBE_TOKEN = credentials('Sonartoken')
