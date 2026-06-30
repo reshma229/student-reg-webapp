@@ -66,22 +66,24 @@ post {
             
                 
                 sendEmail(
-                    subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Build SUCCESS",
-                    body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
-                    to: 'shahabsk135@gmail.com')
+                    "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Build SUCCESS",
+                     "Build SUCCESS. please check the console output at ${env.BUILD_URL}", 
+                     'shahabsk135@gmail.com')
 }
 failure {
                 
                 sendEmail(
-                    subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Build FAILURE",
-                    body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
-                    to: 'shahabsk135@gmail.com')
+                    "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Build FAILURE",
+                    "Build FAILURE. please check the console output at ${env.BUILD_URL}",
+                    'shahabsk135@gmail.com')
 }
 }
 }
 def sendEmail(String subject, String body, String recipient) {
     emailext(
-        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}",
-        body: """<p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
-        to: 'shahabsk135@gmail.com')
+        subject: subject,
+        body: body,
+        to: recipient,
+        mimeType: 'text/html'
+    )
 }
