@@ -25,11 +25,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://32.197.252.224:8081/repository/rushitech-release/</url>
+			<url>http://52.91.204.28:8081/repository/rushitech-release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://32.197.252.224:8081/repository/rushitech-snapshot/</url>
+			<url>http://52.91.204.28:8081/repository/rushitech-snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
